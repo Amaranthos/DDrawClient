@@ -46,7 +46,7 @@ class Window {
 
 
 		if(window) {
-			writeln("Success: SDL window %s created!\n", name);
+			writeln("Success: SDL window '", name, "' created!");
 			mouseFocus = true;
 			keyboardFocus = true;
 			this.width = width;
@@ -57,18 +57,18 @@ class Window {
 			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 			if(renderer) {
-				writeln("Success: SDL renderer created from window %s!\n", name);
+				writeln("Success: SDL renderer created from window '", name, "'!");
 				SDL_SetRenderDrawColor(renderer, clear.r, clear.g, clear.b, clear.a);
 				windowID = SDL_GetWindowID(window);
 				shown = true;
 			}
 			else {
-				writeln("Warning: SDL render could not be created from window %s! SDL Error: %s\n", name, SDL_GetError());
+				writeln("Warning: SDL render could not be created from window '", name, "'! SDL Error: ", SDL_GetError());
 				Free();
 			}
 		}
 		else {
-			writeln("Warning: SDL window %s could not be created! SDL Error %s\n", name, SDL_GetError());
+			writeln("Warning: SDL window '", name, "' could not be created! SDL Error: ", SDL_GetError());
 		}
 
 		return !!window && !!renderer;
@@ -78,7 +78,7 @@ class Window {
 		if(e.type == SDL_WINDOWEVENT && e.window.windowID == windowID) {
 			bool updateCaption = false;
 
-			final switch(e.window.event) {
+			switch(e.window.event) {
 				case SDL_WINDOWEVENT_SHOWN:
 					shown = true;
 					break;
@@ -131,6 +131,9 @@ class Window {
 
 				case SDL_WINDOWEVENT_CLOSE:
 					SDL_HideWindow(window);
+					break;
+
+				default:
 					break;
 			}
 
