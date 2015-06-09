@@ -74,9 +74,82 @@ class Window {
 		return !!window && !!renderer;
 	}
 
-	public void HandleEvent(ref SDL_Event event){
+	public void HandleEvent(ref SDL_Event e){
 		if(e.type == SDL_WINDOWEVENT && e.window.windowID == windowID) {
-			bool updateCaption - false;
+			bool updateCaption = false;
+
+			final switch(e.window.event) {
+				case SDL_WINDOWEVENT_SHOWN:
+					shown = true;
+					break;
+
+				case SDL_WINDOWEVENT_HIDDEN:
+					shown = false;
+					break;
+
+				case SDL_WINDOWEVENT_SIZE_CHANGED:
+					width = e.window.data1;
+					height = e.window.data2;
+					SDL_RenderPresent(renderer);
+					break;
+
+				case SDL_WINDOWEVENT_EXPOSED:
+					SDL_RenderPresent(renderer);
+					break;
+
+				case SDL_WINDOWEVENT_ENTER:
+					mouseFocus = true;
+					updateCaption = true;
+					break;
+
+				case SDL_WINDOWEVENT_LEAVE:
+					mouseFocus = false;
+					updateCaption = true;
+					break;
+
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+					keyboardFocus = true;
+					updateCaption = true;
+					break;
+
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					keyboardFocus = false;
+					updateCaption = true;
+					break;
+
+				case SDL_WINDOWEVENT_MINIMIZED:
+					minimized = true;
+					break;
+
+				case SDL_WINDOWEVENT_MAXIMIZED:
+					minimized = false;
+					break;
+
+				case SDL_WINDOWEVENT_RESTORED:
+					minimized = false;
+					break;
+
+				case SDL_WINDOWEVENT_CLOSE:
+					SDL_HideWindow(window);
+					break;
+			}
+
+			if(updateCaption) {
+				string caption;
+				caption ~= name ~ "- Mouse Focus: " ~ ((mouseFocus)? "On" : "Off") ~ " Keyboard Focus: " ~ ((keyboardFocus) ? "On" : "Off");
+				SDL_SetWindowTitle(window, caption.toStringz);
+			}
+		}
+		else if(e.type == SDL_KEYDOWN && e.key.keysym.sym ==SDLK_F11) {
+			if(fullscreen) {
+				SDL_SetWindowFullscreen(window, SDL_FALSE);
+				fullscreen = false;
+			}
+			else{
+				SDL_SetWindowFullscreen(window, SDL_TRUE);
+				fullscreen = true;
+				minimized = false;
+			}
 		}
 	}
 

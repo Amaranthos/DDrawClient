@@ -37,6 +37,9 @@ class App{
 			if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) writeln("Warning: Linear texture filtering not enabled!\n");
 
 			if(!window.Init(WIDTH, HEIGHT, "Draw Client", Colour(0,0,0))) success = false;
+			else {
+				
+			}
 		}
 		return success;
 	}
