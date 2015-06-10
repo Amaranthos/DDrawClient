@@ -3,13 +3,14 @@ module font;
 import std.stdio;
 import std.string;
 
+import derelict.sdl2.sdl;
 import derelict.sdl2.ttf;
 
 class Font {
 	public TTF_Font font;
 
 	public this() {
-
+		font = TTF_Font();
 	}
 
 	public ~this() {
