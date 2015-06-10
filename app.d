@@ -2,6 +2,7 @@ module app;
 
 import std.stdio;
 import std.socket;
+import std.math;
 
 import derelict.sdl2.sdl;
 import derelict.sdl2.ttf;
@@ -24,6 +25,16 @@ class App{
 
 	SDL_Rect canvas;
 	Colour canvasColour = Colour(255, 255, 255);
+
+	PacketPixel pixel = PacketPixel(1, 0, 0, 0, 0, 0);
+	PacketLine line = PacketLine(2, 0, 0, 0, 0, 0, 0, 0);
+	PacketBox box = PacketBox(3, 0, 0, 50, 50, 0, 0, 0);
+	PacketCircle circle = PacketCircle(4, 0, 0, 50, 0, 0, 0);
+	Colour drawColour = Colour(0, 0, 0);
+
+	int lineX = 0;
+	int lineY = 0;
+	int linePosSet = 0;
 
 	Socket sendSocket;
 	Address sendAddress;
@@ -68,18 +79,60 @@ class App{
 
 		SDL_Event event;
 
-		PacketBox box = PacketBox(3, 0, 0, 100, 100, 20 / 255.0f, 135 / 255.0f, 242 / 255.0f);
-	
-		PacketCircle circle = PacketCircle(4, 200, 155, 20, 42 / 255.0f, 74 / 255.0f, 323 / 255.0f);
+		int toolChoice= 1;
 
 		while(!quit) {
 			stdout.flush();
 			while(SDL_PollEvent(&event) != 0) {
 				if(event.type == SDL_QUIT) quit = true;
-				else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
-				else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) SendPacket(box);
-				else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) SendPacket (circle);
+				else if (event.type == SDL_KEYDOWN) {
+					switch(event.key.keysym.sym){
+						case SDLK_1:
+							toolChoice = 1;
+							break;
+
+						case SDLK_2:
+							toolChoice = 2;
+							break;
+
+						case SDLK_3:
+							toolChoice = 3;
+							break;
+
+						case SDLK_4:
+							toolChoice = 4;
+							break;
+
+						case SDLK_ESCAPE:
+							quit = true;
+							break;
+
+						default:
+							break;
+					}
+				}
 				window.HandleEvent(event);
+
+				switch(toolChoice) {
+					case 1:
+						DrawPixel(event);
+						break;
+
+					case 2:
+						DrawLine(event);
+						break;
+
+					case 3:
+						DrawBox(event);
+						break;
+
+					case 4:
+						DrawCircle(event);
+						break;
+
+					default:
+						break;
+				}
 			}
 
 			window.Clear();
@@ -91,14 +144,114 @@ class App{
 		}
 	}
 
-	public void SendPacket(T)(ref T packet) {
+	private void DrawPixel(ref SDL_Event e){
+		if(e.type == SDL_MOUSEBUTTONDOWN && SDL_BUTTON(SDL_BUTTON_LEFT) && MouseOverCanvas){
+			int x, y = 0;
+
+			MousePosOnCanvas(x, y);
+
+			pixel.x = x;
+			pixel.y = y;
+
+			pixel.r = drawColour.r / 255.0f;
+			pixel.g = drawColour.g / 255.0f;
+			pixel.b = drawColour.b / 255.0f;
+
+			SendPacket(pixel);
+		}
+	}
+
+	private void DrawLine(ref SDL_Event e){
+			if(e.type == SDL_MOUSEBUTTONDOWN && SDL_BUTTON(SDL_BUTTON_LEFT) && MouseOverCanvas){
+			int x, y = 0;
+
+			MousePosOnCanvas(x, y);
+
+			if(linePosSet == 0) {
+				lineX = x;
+				lineY = y;
+				
+			}
+			else {
+				line.x1 = lineX;
+				line.y1 = lineY;
+
+				line.x2 = x;
+				line.y2 = y;
+
+				line.r = drawColour.r / 255.0f;
+				line.g = drawColour.g / 255.0f;
+				line.b = drawColour.b / 255.0f;
+
+				SendPacket(line);
+			}			
+			linePosSet = 1 - linePosSet;
+		}
+	}
+
+	private void DrawBox(ref SDL_Event e){
+			if(e.type == SDL_MOUSEBUTTONDOWN && SDL_BUTTON(SDL_BUTTON_LEFT) && MouseOverCanvas){
+			int x, y = 0;
+
+			MousePosOnCanvas(x, y);
+
+			box.x = x - box.w/2;
+			box.y = y - box.h/2;
+
+			box.r = drawColour.r / 255.0f;
+			box.g = drawColour.g / 255.0f;
+			box.b = drawColour.b / 255.0f;
+
+			SendPacket(box);
+		}
+	}
+
+	private void DrawCircle(ref SDL_Event e){
+			if(e.type == SDL_MOUSEBUTTONDOWN && SDL_BUTTON(SDL_BUTTON_LEFT) && MouseOverCanvas){
+			int x, y = 0;
+
+			MousePosOnCanvas(x, y);
+
+			circle.x = x - circle.radius/2;
+			circle.y = y - circle.radius/2;
+
+			circle.r = drawColour.r / 255.0f;
+			circle.g = drawColour.g / 255.0f;
+			circle.b = drawColour.b / 255.0f;
+
+			SendPacket(circle);
+		}
+	}
+
+	private bool MouseOverCanvas(){
+		int x, y = 0;
+
+		SDL_GetMouseState(&x, &y);
+
+		bool isIn = true;
+
+		if(x < canvas.x) isIn = false;
+		else if(x > canvas.x + canvas.w) isIn = false;
+		else if (y < canvas.y) isIn = false;
+		else if (y > canvas.y + canvas.h) isIn = false;
+
+		return isIn;
+	}
+
+	private void MousePosOnCanvas(ref int x, ref int y) {
+		SDL_GetMouseState(&x, &y);
+		x -= canvas.x;
+		y -= canvas.y;
+	}
+
+	private void SendPacket(T)(ref T packet) {
 		int res = sendSocket.sendTo(cast(void[])[packet],sendAddress);
 
 		if(res == Socket.ERROR) writeln("Warning: Failed to send packet!");
 		else writeln("Success: Packet size of ", res, " sent!");
 	}
 
-	public void InitialiseSocket(const char[] hostAddress, ushort port) {
+	private void InitialiseSocket(const char[] hostAddress, ushort port) {
 		sendSocket = new UdpSocket();
 		sendAddress = parseAddress(hostAddress, port);
 	}

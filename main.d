@@ -2,7 +2,6 @@ module main;
 
 pragma(lib, "lib\\DerelictSDL2.lib");
 pragma(lib, "lib\\DerelictUtil.lib");
-pragma(lib, "lib\\SDL2_ttf.dll");
 
 import std.stdio;
 
