@@ -4,6 +4,7 @@ import std.stdio;
 import std.socket;
 
 import derelict.sdl2.sdl;
+import derelict.sdl2.ttf;
 
 import window;
 import colour;
@@ -16,7 +17,13 @@ class App{
 	static const WIDTH = 720;
 	static const HEIGHT = 720;
 
+	static const CANVAS_WIDTH = 512;
+	static const CANVAS_HEIGHT = 512;
+
 	Window window;
+
+	SDL_Rect canvas;
+	Colour canvasColour = Colour(255, 255, 255);
 
 	Socket sendSocket;
 	Address sendAddress;
@@ -24,6 +31,7 @@ class App{
 	//Member functions
 	private this() {
 		window = new Window();
+		canvas = SDL_Rect((WIDTH - CANVAS_WIDTH)/2, (HEIGHT - CANVAS_HEIGHT)/2, CANVAS_WIDTH, CANVAS_HEIGHT);
 	}
 
 	static public App Inst() {
@@ -43,7 +51,12 @@ class App{
 
 			if(!window.Init(WIDTH, HEIGHT, "Draw Client", Colour(0,0,0))) success = false;
 			else {
-				
+				if(TTF_Init() == -1) {
+					writeln("Warning: SDL_TTF could not initialise! SDL_TTF Error: ", TTF_GetError());
+					success = false;
+				}
+				else writeln("Success: SDL_TTF initialised!");
+
 				InitialiseSocket("127.0.0.1", 1300);
 			}
 		}
@@ -56,14 +69,7 @@ class App{
 		SDL_Event event;
 
 		PacketBox box = PacketBox(3, 0, 0, 100, 100, 20 / 255.0f, 135 / 255.0f, 242 / 255.0f);
-		//box.x = 0;
-		//box.y = 0;
-		//box.w = 100;
-		//box.h = 100;
-		//box.r = 20 / 255.0f;
-		//box.g = 135 / 255.0f;
-		//box.b = 242 / 255.0f;
-
+	
 		PacketCircle circle = PacketCircle(4, 200, 155, 20, 42 / 255.0f, 74 / 255.0f, 323 / 255.0f);
 
 		while(!quit) {
@@ -78,7 +84,8 @@ class App{
 
 			window.Clear();
 
-			
+			DrawCanvas();
+
 
 			window.Render();
 		}
@@ -96,7 +103,13 @@ class App{
 		sendAddress = parseAddress(hostAddress, port);
 	}
 
+	private void DrawCanvas() {
+		SDL_SetRenderDrawColor(window.renderer, canvasColour.r, canvasColour.g, canvasColour.b, canvasColour.a);
+		SDL_RenderFillRect(window.renderer, &canvas);
+	}
+
 	public void Close() {
+		TTF_Quit();
 		SDL_Quit();
 	}
 }
