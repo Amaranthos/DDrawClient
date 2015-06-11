@@ -16,11 +16,8 @@ class RenderText {
 
 	SDL_Texture* image;
 
-	Font font;
-
 	this() {
 		image = null;
-		font.LoadFont("arial.ttf", 11);
 	}
 
 	~this() {
@@ -36,7 +33,7 @@ class RenderText {
 		}
 	}
 
-	public bool CreateText(string text, Colour colour, Window window) {
+	public bool CreateText(string text, Colour colour, Window window, Font font) {
 		Free();
 
 		SDL_Color temp = SDL_Color(colour.r, colour.g, colour.b);

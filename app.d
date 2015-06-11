@@ -32,22 +32,31 @@ class App{
 	PacketLine line = PacketLine(2, 0, 0, 0, 0, 0, 0, 0);
 	PacketBox box = PacketBox(3, 0, 0, 50, 50, 0, 0, 0);
 	PacketCircle circle = PacketCircle(4, 0, 0, 50, 0, 0, 0);
+	
+	SDL_Rect colourPicker;
 	Colour drawColour = Colour(0, 0, 0);
 
 	int lineX = 0;
 	int lineY = 0;
 	int linePosSet = 0;
 
+	Font font;
 	RenderText choices;
+	RenderText colourFields;
 
 	Socket sendSocket;
 	Address sendAddress;
 
+	Colour white = Colour(255, 255, 255);
+
 	//Member functions
 	private this() {
+		font = new Font();
 		window = new Window();
 		choices = new RenderText();
+		colourFields = new RenderText();
 		canvas = SDL_Rect((WIDTH - CANVAS_WIDTH)/2, (HEIGHT - CANVAS_HEIGHT)/2, CANVAS_WIDTH, CANVAS_HEIGHT);
+		colourPicker = SDL_Rect(canvas.x/2 - 16, HEIGHT/4, 32, 32);
 	}
 
 	static public App Inst() {
@@ -145,7 +154,7 @@ class App{
 			window.Clear();
 
 			DrawCanvas();
-
+			DrawColourPicker();
 			DrawText();
 
 			window.Render();
@@ -153,7 +162,9 @@ class App{
 	}
 
 	private void CreateText() {
-		choices.CreateText("~ Press 1 for pixels :: Press 2 for lines :: Press 3 for boxes :: Press 4 for circles ~", Colour(255, 255, 255), window);
+		font.LoadFont("arial.ttf", 18);
+		choices.CreateText("~ Press 1 for pixels :: Press 2 for lines :: Press 3 for boxes :: Press 4 for circles ~", white, window, font);
+		colourFields.CreateText("Colour: \n Red: \n Green: \n Blue:", white, window, font);
 	}
 
 	private void DrawPixel(ref SDL_Event e){
@@ -273,8 +284,17 @@ class App{
 		SDL_RenderFillRect(window.renderer, &canvas);
 	}
 
+	private void DrawColourPicker() {
+		SDL_SetRenderDrawColor(window.renderer, drawColour.r, drawColour.g, drawColour.b, drawColour.a);
+		SDL_RenderFillRect(window.renderer, &colourPicker);
+
+		SDL_SetRenderDrawColor(window.renderer, white.r, white.g, white.b, white.a);
+		SDL_RenderDrawRect(window.renderer, &colourPicker);
+	}
+
 	private void DrawText() {
-		choices.Render(WIDTH/2 - choices.Width/2, HEIGHT/2 - choices.Height/2, window);
+		choices.Render(WIDTH/2 - choices.Width/2, canvas.y/2 - choices.Height/2, window);
+		colourFields.Render(canvas.x/2 - colourFields.Width/2, colourPicker.y + colourPicker.h + colourFields.Height/2, window);
 	}
 
 	public void Close() {
