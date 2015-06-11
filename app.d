@@ -44,16 +44,26 @@ class App{
 
 	Font font;
 	Font smallFont;
+
 	RenderText choices;
 	RenderText colourTitle;
 	RenderText redField;
 	RenderText greenField;
 	RenderText blueField;
 
+	RenderText toolTitle;
+	RenderText bWidth;
+	RenderText bHeight;
+	RenderText cRadius;
+
 	bool dRed = false;
 	bool dGreen = false;
 	bool dBlue = false;
-	//bool 
+
+	bool dTool = false;
+	bool dW = false;
+	bool dH = false;
+	bool dR = false;
 
 	Socket sendSocket;
 	Address sendAddress;
@@ -73,6 +83,11 @@ class App{
 		redField = new RenderText();
 		greenField = new RenderText();
 		blueField = new RenderText();
+
+		toolTitle = new RenderText();
+		bWidth = new RenderText();
+		bHeight = new RenderText();
+		cRadius = new RenderText();
 
 		// Rects
 		canvas = SDL_Rect((WIDTH - CANVAS_WIDTH)/2, (HEIGHT - CANVAS_HEIGHT)/2, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -188,11 +203,16 @@ class App{
 	private void CreateText() {
 		font.LoadFont("arial.ttf", 18);
 		smallFont.LoadFont("arial.ttf", 12);
+
 		choices.CreateText("~ Press 1 for pixels :: Press 2 for lines :: Press 3 for boxes :: Press 4 for circles ~", white, window, font);
+
 		colourTitle.CreateText("Colour", white, window, font);
+
 		redField.CreateText("Red: " ~ to!string(drawColour.r), white, window, smallFont);
 		greenField.CreateText("Green: " ~ to!string(drawColour.g), white, window, smallFont);
 		blueField.CreateText("Blue: " ~ to!string(drawColour.b), white, window, smallFont);
+
+		toolTitle.CreateText("Line Tool", white, window, font);
 	}
 
 	private void UpdateText() {
@@ -374,11 +394,16 @@ class App{
 
 	private void DrawText() {
 		int padding_1 = 10;
+
 		choices.Render(WIDTH/2 - choices.pos.w/2, canvas.y/2 - choices.pos.h/2, window);
+
 		colourTitle.Render(canvas.x/2 - colourTitle.pos.w/2, colourPicker.y + colourPicker.h + colourTitle.pos.h/2, window);
+
 		redField.Render(canvas.x/2 - colourTitle.pos.w/2, colourPicker.y + colourPicker.h + colourTitle.pos.h + redField.pos.h/2 + padding_1, window);
 		greenField.Render(canvas.x/2 - colourTitle.pos.w/2, colourPicker.y + colourPicker.h + colourTitle.pos.h + redField.pos.h + greenField.pos.h/2 + padding_1, window);
 		blueField.Render(canvas.x/2 - colourTitle.pos.w/2, colourPicker.y + colourPicker.h + colourTitle.pos.h + redField.pos.h + greenField.pos.h + blueField.pos.h/2 + padding_1, window);
+
+		toolTitle.Render(WIDTH - canvas.x/2 - toolTitle.pos.w/2, colourPicker.y + colourPicker.h + toolTitle.pos.h/2, window);
 	}
 
 	public void Close() {
