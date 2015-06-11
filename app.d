@@ -10,6 +10,8 @@ import derelict.sdl2.ttf;
 import window;
 import colour;
 import packets;
+import font;
+import text;
 
 class App{
 	//Member variables
@@ -36,12 +38,15 @@ class App{
 	int lineY = 0;
 	int linePosSet = 0;
 
+	RenderText choices;
+
 	Socket sendSocket;
 	Address sendAddress;
 
 	//Member functions
 	private this() {
 		window = new Window();
+		choices = new RenderText();
 		canvas = SDL_Rect((WIDTH - CANVAS_WIDTH)/2, (HEIGHT - CANVAS_HEIGHT)/2, CANVAS_WIDTH, CANVAS_HEIGHT);
 	}
 
@@ -80,6 +85,8 @@ class App{
 		SDL_Event event;
 
 		int toolChoice= 1;
+
+		CreateText();
 
 		while(!quit) {
 			stdout.flush();
@@ -139,9 +146,14 @@ class App{
 
 			DrawCanvas();
 
+			DrawText();
 
 			window.Render();
 		}
+	}
+
+	private void CreateText() {
+		choices.CreateText("~ Press 1 for pixels :: Press 2 for lines :: Press 3 for boxes :: Press 4 for circles ~", Colour(255, 255, 255), window);
 	}
 
 	private void DrawPixel(ref SDL_Event e){
@@ -259,6 +271,10 @@ class App{
 	private void DrawCanvas() {
 		SDL_SetRenderDrawColor(window.renderer, canvasColour.r, canvasColour.g, canvasColour.b, canvasColour.a);
 		SDL_RenderFillRect(window.renderer, &canvas);
+	}
+
+	private void DrawText() {
+		choices.Render(WIDTH/2 - choices.Width/2, HEIGHT/2 - choices.Height/2, window);
 	}
 
 	public void Close() {
