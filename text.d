@@ -11,10 +11,8 @@ import colour;
 import font;
 
 class RenderText {
-	private int width = 0;
-	private int height = 0;
-
 	SDL_Texture* image;
+	public SDL_Rect pos = SDL_Rect(0,0,0,0);
 
 	this() {
 		image = null;
@@ -28,8 +26,7 @@ class RenderText {
 		if(image){
 			SDL_DestroyTexture(image);
 			image = null;
-			width = 0;
-			height = 0;
+			pos = SDL_Rect(0,0,0,0);
 		}
 	}
 
@@ -43,8 +40,8 @@ class RenderText {
 			image = SDL_CreateTextureFromSurface(window.renderer, textImage);
 
 			if(image) {
-				width = textImage.w;
-				height = textImage.h;
+				pos.w = textImage.w;
+				pos.h = textImage.h;
 			}
 			else writeln("Warning: Unable to create texture from text! SDL Error: ", SDL_GetError());
 
@@ -56,15 +53,7 @@ class RenderText {
 	}
 
 	public void Render(int x, int y, Window window){
-		SDL_Rect temp = SDL_Rect(x, y, width, height);
-		SDL_RenderCopy(window.renderer, image, null, &temp);
-	}
-
-	public int Height() @property {
-		return height;
-	}
-
-	public int Width() @property {
-		return width;
+		pos = SDL_Rect(x, y, pos.w, pos.h);
+		SDL_RenderCopy(window.renderer, image, null, &pos);
 	}
 }
