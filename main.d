@@ -1,19 +1,19 @@
 module main;
 
-pragma(lib, "lib\\DerelictSDL2.lib");
 pragma(lib, "lib\\DerelictUtil.lib");
+pragma(lib, "lib\\DerelictSDL2.lib");
 
 import std.stdio;
 
 import derelict.sdl2.sdl;
-import derelict.sdl2.ttf;
+//import derelict.sdl2.ttf;
 
 import app;
 
 void main() {
 	try{
 		DerelictSDL2.load();
-		DerelictSDL2ttf.load();
+		//DerelictSDL2ttf.load();
 
 		if(!App.Inst.Init()) writeln("Warning: Draw Client failed to init!");
 		else App.Inst.Update();

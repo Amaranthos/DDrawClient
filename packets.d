@@ -1,5 +1,11 @@
 module packets;
 
+struct CursorInfo {
+	public uint x;
+	public uint y;
+	public char data;
+}
+
 struct PacketPixel {
 	private int type = 1;
 	public int x;
