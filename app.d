@@ -17,8 +17,8 @@ import font;
 import text;
 import button;
 
-//string ip = "127.0.0.1";
-string ip = "10.40.60.35";
+string ip = "127.0.0.1";
+//string ip = "10.40.60.35";
 
 class App{
 	//Member variables
