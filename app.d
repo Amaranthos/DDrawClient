@@ -16,6 +16,7 @@ import packets;
 import font;
 import text;
 import button;
+import heatmap;
 
 string ip = "127.0.0.1";
 //string ip = "10.40.60.35";
@@ -136,6 +137,8 @@ class App{
 
 		int toolChoice= 1;
 
+		HeatMap heatMap = new HeatMap(WIDTH, HEIGHT);
+
 		CreateText();
 
 		while(!quit) {
@@ -194,6 +197,8 @@ class App{
 				CheckForChangedText(event);
 			}
 
+			heatMap.SetMousePosition();
+
 			window.Clear();
 
 			UpdateText();
@@ -204,6 +209,7 @@ class App{
 
 			window.Render();
 		}
+		heatMap.SaveHeatMap("heatmap.bmp");
 	}
 
 	private void CreateText() {

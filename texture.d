@@ -4,6 +4,8 @@ import std.stdio;
 
 import derelict.sdl2.sdl;
 
+import window;
+
 class Texture{
 	public SDL_Texture* texture;
 	public void* pixels;
@@ -26,7 +28,7 @@ class Texture{
 
 	//}
 
-	void CreateBlank(int width, int height, Window window, SDL_TextureAcess access = SDL_TEXTUREACCESS_STREAMING){
+	void CreateBlank(int width, int height, Window window, SDL_TextureAccess access = SDL_TEXTUREACCESS_STREAMING){
 		texture = SDL_CreateTexture(window.renderer, SDL_PIXELFORMAT_RGBA8888, access, width, height);
 
 		if(texture) {
@@ -48,20 +50,16 @@ class Texture{
 		if (!pixels) success = false;
 		else {
 			SDL_UnlockTexture (texture);
-			pixels = nullptr;
+			pixels = null;
 			pitch = 0;
 		}
 		return success;
 	}
 
-	void* Pixels() {
-		return pixels;
-	}
-
 	void Free() {
 		if (texture) {
 			SDL_DestroyTexture (texture);
-			texture = nullptr;
+			texture = null;
 			width = 0;
 			height = 0;
 		}
