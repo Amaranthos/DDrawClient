@@ -185,6 +185,10 @@ class Window {
 		height = 0;
 	}
 
+	public void SetSize(int x, int y) {
+		SDL_SetWindowSize(window, x, y);
+	}
+
 	public SDL_Window* Inst() @property {
 		return window;
 	}

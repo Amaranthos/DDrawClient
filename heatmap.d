@@ -44,18 +44,11 @@ class HeatMap {
 				}
 			}
 		}
-		//int blue = temp.b;
-		//blue -=1;
-		//if(blue > 255) blue = 255;
-
-		//temp.b = cast(ubyte) blue;
-
-		//int green = temp.g;
-		//green -=5;
-		//if(green > 255) green = 255;
-
-		//temp.g = cast(ubyte) green;
 	}
+
+	//private Colour ColourMap(float value) {
+		
+	//}
 
 	void SaveHeatMap(string path) {
 
@@ -65,12 +58,6 @@ class HeatMap {
 			uint* pixels = cast(uint*)outSurface.pixels;
 			for (int i  = 0; i <  width * height; i++) {
 				pixels[i] = SDL_MapRGB(outSurface.format, mousePositions[i].r, mousePositions[i].g, mousePositions[i].b);
-
-				//for(int j = -1; j < 1; j++) {
-				//	for(int k = -1; k < 1; k++) {
-				//		if((i+j+k*width) > 0 && (i+j+k*width) < width * height)	pixels[i+j+k*width] = SDL_MapRGB(outSurface.format, mousePositions[i].r, mousePositions[i].g, mousePositions[i].b);
-				//	}
-				//}
 			}
 		}
 

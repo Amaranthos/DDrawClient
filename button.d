@@ -36,9 +36,7 @@ class Button {
 		SDL_RenderDrawRect(window.renderer, &pos);
 	}
 
-	public bool MouseOver() {
-		int x, y = 0;
-
+	public bool MouseOver(ref int x, ref int y) {
 		SDL_GetMouseState(&x, &y);
 
 		bool isIn = true;
@@ -47,6 +45,9 @@ class Button {
 		else if(x > pos.x + pos.w) isIn = false;
 		else if (y < pos.y) isIn = false;
 		else if (y > pos.y + pos.h) isIn = false;
+
+		x -= pos.x;
+		y -= pos.y;
 
 		return isIn;
 	}
