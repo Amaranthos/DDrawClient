@@ -18,6 +18,8 @@ import text;
 import button;
 import heatmap;
 import comms;
+import texture;
+import slider;
 
 static string ip = "127.0.0.1";
 //static string ip = "10.40.60.35";
@@ -61,6 +63,8 @@ class App{
 	Button b_line;
 	Button b_box;
 	Button b_circle;
+
+	Slider s_red;
 
 	HeatMap heatMap;
 
@@ -112,33 +116,58 @@ class App{
 				if(event.type == SDL_QUIT) quit = true;
 				else if (event.type == SDL_KEYDOWN) {
 					switch(event.key.keysym.sym){
-						case SDLK_1: toolChoice = 1; break;
-
-						case SDLK_2: toolChoice = 2; break;
-
-						case SDLK_3: toolChoice = 3; break;
-
-						case SDLK_4: toolChoice = 4; break;
-
-						case SDLK_ESCAPE: quit = true; break;
+						case SDLK_ESCAPE: 
+							quit = true; 
+							break;
 
 						default: break;
 					}
 				}
 				window.HandleEvent(event);
+				HandleSliderEvents(event);
 
 				int x, y = 0;
-				if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && canvas.MouseOver(x,y)) {
-					switch(toolChoice) {
-						case 1: DrawPixel(x, y); break;
+				if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+					if(canvas.MouseOver(x,y)){
+						switch(toolChoice) {
+							case 1: DrawPixel(x, y); break;
 
-						case 2: DrawLine(x, y); break;
+							case 2: DrawLine(x, y); break;
 
-						case 3: DrawBox(x, y); break;
+							case 3: DrawBox(x, y); break;
 
-						case 4: DrawCircle(x, y); break;
+							case 4: DrawCircle(x, y); break;
 
-						default: break;
+							default: break;
+						}
+					}
+					else if(b_pixel.MouseOver(x,y)){
+						toolChoice = 1;
+						b_pixel.isSelected = true;
+						b_line.isSelected = false;
+						b_box.isSelected = false;
+						b_circle.isSelected = false;
+					}
+					else if(b_line.MouseOver(x,y)) {
+						toolChoice = 2;
+						b_pixel.isSelected = false;
+						b_line.isSelected = true;
+						b_box.isSelected = false;
+						b_circle.isSelected = false;
+					}
+					else if(b_box.MouseOver(x,y)) {
+						toolChoice = 3;
+						b_pixel.isSelected = false;
+						b_line.isSelected = false;
+						b_box.isSelected = true;
+						b_circle.isSelected = false;
+					}
+					else if(b_circle.MouseOver(x,y)) {
+						toolChoice = 4;
+						b_pixel.isSelected = false;
+						b_line.isSelected = false;
+						b_box.isSelected = false;
+						b_circle.isSelected = true;
 					}
 				}
 			}
@@ -152,8 +181,13 @@ class App{
 		heatMap.SaveHeatMap("heatmap.bmp");
 	}
 
+	private void HandleSliderEvents(ref SDL_Event e){
+		s_red.HandleEvent(e);
+	}
+
 	private void DrawEverything() {
 		DrawButtons();
+		DrawSliders();
 	}
 
 	private void PerformActions() {
@@ -176,6 +210,19 @@ class App{
 		b_line = new Button(SDL_Rect(window.Width - canvas.pos.x/2 - 16, canvas.pos.y/4 + canvas.pos.y + 1 * (32 + b_Padding_1), 32, 32), Colour.Grey, Colour.Silver);
 		b_box = new Button(SDL_Rect(window.Width - canvas.pos.x/2 - 16, canvas.pos.y/4 + canvas.pos.y + 2 * (32 + b_Padding_1), 32, 32), Colour.Grey, Colour.Silver);
 		b_circle = new Button(SDL_Rect(window.Width - canvas.pos.x/2 - 16, canvas.pos.y/4 + canvas.pos.y + 3 * (32 + b_Padding_1), 32, 32), Colour.Grey, Colour.Silver);;
+
+		b_pixel.isSelected = true;
+
+		s_red = new Slider(new Button(), SDL_Rect(10, canvas.pos.y/4 + canvas.pos.y + colourPicker.pos.h + b_Padding_1, canvas.pos.x - 20, 5), Colour.White);
+
+		LoadImages();
+	}
+
+	private void LoadImages() {
+		b_pixel.LoadButtonImage("pixel.bmp", window);
+		b_line.LoadButtonImage("line.bmp", window);
+		b_box.LoadButtonImage("box.bmp", window);
+		b_circle.LoadButtonImage("circle.bmp", window);
 	}
 
 	private void DrawPixel(int x, int y){
@@ -263,6 +310,10 @@ class App{
 		b_line.Render(window);
 		b_box.Render(window);
 		b_circle.Render(window);
+	}
+
+	private void DrawSliders() {
+		s_red.Render(window);
 	}
 
 	private SDL_Rect BuildRect (ref SDL_Rect rect) {
