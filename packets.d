@@ -1,9 +1,9 @@
 module packets;
 
 align(1) struct CursorInfo {
-	public uint x;
-	public uint y;
-	public char data;
+	public ushort x;
+	public ushort y;
+	public byte data;
 }
 
 align(1) struct PacketPixel {

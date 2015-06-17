@@ -21,8 +21,8 @@ import comms;
 import texture;
 import slider;
 
-static string ip = "127.0.0.1";
-//static string ip = "10.40.60.35";
+//static string ip = "127.0.0.1";
+static string ip = "10.40.61.0";
 
 static int PADDING = 200;
 
@@ -183,6 +183,8 @@ class App{
 
 	private void HandleSliderEvents(ref SDL_Event e){
 		s_red.HandleEvent(e);
+
+		drawColour = Colour(cast(ubyte)(255 * s_red.sliderValue), drawColour.g, drawColour.b);
 	}
 
 	private void DrawEverything() {
@@ -193,10 +195,12 @@ class App{
 	private void PerformActions() {
 		int x,y = 0;
 		SDL_GetMouseState(&x, &y);
-		cursor.cursor = CursorInfo(x,y, drawColour.r);
+
+		cursor.cursor = CursorInfo(cast(ushort)x, cast(ushort)y, 0);
 		comms.SendPacket(cursor, false);
 
 		byte[] serverResponse = comms.RecievePacket(false);
+		
 		heatMap.SetMousePosition();
 	}
 

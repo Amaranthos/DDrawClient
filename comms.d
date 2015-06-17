@@ -22,7 +22,7 @@ class Comms {
 		int res = sendSocket.sendTo(cast(void[])[packet], sendAddress);
 
 		if(res == Socket.ERROR) writeln("Warning: Failed to send packet!");
-		else if(doPrint) writeln("Success: Packet size of ", res, " sent!");
+		else if(doPrint) writeln("Success: Packet: ", packet, " size of ", res, " sent!");
 	}
 
 	public byte[] RecievePacket(bool doPrint = true) {
