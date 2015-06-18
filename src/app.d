@@ -14,8 +14,6 @@ import derelict.sdl2.sdl;
 import window;
 import colour;
 import packets;
-import font;
-import text;
 import button;
 import heatmap;
 import comms;
@@ -174,7 +172,7 @@ class App{
 	
 			window.Render();
 		}
-		heatMap.SaveHeatMap("heatmap.bmp");
+		heatMap.SaveHeatMap("img/heatmap.bmp");
 	}
 
 	private void HandleSliderEvents(ref SDL_Event e){
@@ -228,10 +226,10 @@ class App{
 	}
 
 	private void LoadImages() {
-		b_pixel.LoadButtonImage("pixel.bmp", window);
-		b_line.LoadButtonImage("line.bmp", window);
-		b_box.LoadButtonImage("box.bmp", window);
-		b_circle.LoadButtonImage("circle.bmp", window);
+		b_pixel.LoadButtonImage("img/pixel.bmp", window);
+		b_line.LoadButtonImage("img/line.bmp", window);
+		b_box.LoadButtonImage("img/box.bmp", window);
+		b_circle.LoadButtonImage("img/circle.bmp", window);
 	}
 
 	private void DrawPixel(int x, int y){
