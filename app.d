@@ -7,6 +7,7 @@ import std.array;
 import std.algorithm;
 
 import core.time;
+import core.thread;
 
 import derelict.sdl2.sdl;
 
@@ -21,8 +22,8 @@ import comms;
 import texture;
 import slider;
 
-//static string ip = "127.0.0.1";
-static string ip = "10.40.61.0";
+static string ip = "127.0.0.1";
+//static string ip = "10.40.61.0";
 
 static int PADDING = 200;
 
@@ -47,15 +48,6 @@ class App{
 	int lineY = 0;
 	int firstPosSet = 0;
 
-	bool dRed = false;
-	bool dGreen = false;
-	bool dBlue = false;
-
-	bool dTool = false;
-	bool dW = false;
-	bool dH = false;
-	bool dR = false;
-
 	Button canvas;
 	Button colourPicker;
 
@@ -65,6 +57,8 @@ class App{
 	Button b_circle;
 
 	Slider s_red;
+	Slider s_green;
+	Slider s_blue;
 
 	HeatMap heatMap;
 
@@ -91,7 +85,11 @@ class App{
 			comms.SendPacket(announce);
 			byte[] response = comms.RecievePacket();
 
-			if(GetInt(response, 0) == 7) serverInfo = (cast(PacketServerInfo[])response)[0];
+			if(GetInt(response, 0) == 7){
+				serverInfo = (cast(PacketServerInfo[])response)[0];
+				writeln("Success: Conncected to Draw Server!");
+			}
+				
 
 			if(!window.Init(serverInfo.w + PADDING, serverInfo.h + PADDING, "Draw Client", Colour(0,0,0))) success = false;
 			else {
@@ -108,8 +106,6 @@ class App{
 		SDL_Event event;
 		int toolChoice= 1;
 
-		
-		
 		while(!quit) {
 			stdout.flush();
 			while(SDL_PollEvent(&event) != 0) {
@@ -183,8 +179,14 @@ class App{
 
 	private void HandleSliderEvents(ref SDL_Event e){
 		s_red.HandleEvent(e);
+		s_green.HandleEvent(e);
+		s_blue.HandleEvent(e);
 
-		drawColour = Colour(cast(ubyte)(255 * s_red.sliderValue), drawColour.g, drawColour.b);
+		colourPicker.fillColour = drawColour = Colour(cast(ubyte)(255 * s_red.sliderValue), cast(ubyte)(255 * s_green.sliderValue), cast(ubyte)(255 * s_blue.sliderValue));
+
+		s_red.barColour = Colour(drawColour.r, 0, 0);
+		s_green.barColour = Colour(0, drawColour.g, 0);
+		s_blue.barColour = Colour(0, 0, drawColour.b);
 	}
 
 	private void DrawEverything() {
@@ -209,6 +211,7 @@ class App{
 		colourPicker = new Button(SDL_Rect(canvas.pos.x/2 - 16, canvas.pos.y/4 + canvas.pos.y, 32, 32), drawColour, Colour.White);
 
 		int b_Padding_1 = 5;
+		int b_Padding_2 = 10;
 
 		b_pixel = new Button(SDL_Rect(window.Width - canvas.pos.x/2 - 16, canvas.pos.y/4 + canvas.pos.y + 0 * (32 + b_Padding_1), 32, 32), Colour.Grey, Colour.Silver);
 		b_line = new Button(SDL_Rect(window.Width - canvas.pos.x/2 - 16, canvas.pos.y/4 + canvas.pos.y + 1 * (32 + b_Padding_1), 32, 32), Colour.Grey, Colour.Silver);
@@ -217,7 +220,9 @@ class App{
 
 		b_pixel.isSelected = true;
 
-		s_red = new Slider(new Button(), SDL_Rect(10, canvas.pos.y/4 + canvas.pos.y + colourPicker.pos.h + b_Padding_1, canvas.pos.x - 20, 5), Colour.White);
+		s_red = new Slider(SDL_Rect(10, canvas.pos.y/4 + canvas.pos.y + colourPicker.pos.h + b_Padding_2, canvas.pos.x - 20, 6), Colour.White, Colour.Silver, 0.0);
+		s_green = new Slider(SDL_Rect(10, canvas.pos.y/4 + canvas.pos.y + colourPicker.pos.h + 2 * b_Padding_2 + s_red.bar.h, canvas.pos.x - 20, 6), Colour.White, Colour.Silver, 0.0);
+		s_blue = new Slider(SDL_Rect(10, canvas.pos.y/4 + canvas.pos.y + colourPicker.pos.h + 3 * b_Padding_2 + s_red.bar.h + s_green.bar.h, canvas.pos.x - 20, 6), Colour.White, Colour.Silver, 0.0);
 
 		LoadImages();
 	}
@@ -318,6 +323,8 @@ class App{
 
 	private void DrawSliders() {
 		s_red.Render(window);
+		s_green.Render(window);
+		s_blue.Render(window);
 	}
 
 	private SDL_Rect BuildRect (ref SDL_Rect rect) {
@@ -326,11 +333,15 @@ class App{
 		int w = rect.w;
 		int h = rect.h;
 
+		writeln(rect);
+
 		rect.x = min(x, w);
 		rect.w = max(x, w);
 
 		rect.y = min(y, h);
 		rect.h = max(y, h);
+
+		writeln(rect);
 
 		return rect;
 	}

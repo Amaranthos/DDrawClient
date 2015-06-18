@@ -14,37 +14,34 @@ class Slider{
 	public SDL_Rect bar;
 
 	public Colour barColour;
+	public Colour outlineColour;
 
 	public float sliderValue;
 
-	this(Button handle, SDL_Rect bar, Colour barColour = Colour(255, 255, 255), float sliderValue = 0.5) {
-		this.handle = handle;
+	this(SDL_Rect bar, Colour barColour = Colour.Black, Colour outlineColour = Colour.Silver, float sliderValue = 0.5) {
 		this.bar = bar;
 		this.barColour = barColour;
+		this.outlineColour = outlineColour;
 		this.sliderValue = sliderValue;
+		handle = new Button(SDL_Rect(cast(int)(sliderValue * bar.w + bar.x), bar.y, bar.h, bar.h), Colour.Black, Colour.Silver);
 	}
 
 	public void HandleEvent(ref SDL_Event e) {
 		int x,y = 0;
 		if(e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT){
-			writeln("Left button pressed!");
 		 	if(MouseOver(x,y)) {
-				//if(x > bar.x && x < bar.w) {
-				//	if(y > bar.y && y < bar.h) {
-				//	}
-				//}
-				writeln("X: ", x, " Y: ", y);
-				sliderValue = (x - bar.x)/(bar.w - bar.x);
-				//writeln((x - bar.x)/(bar.w - bar.x));
-				writeln(x-bar.x);
+				sliderValue = (cast(float)x - cast(float)bar.x) / cast(float)bar.w;
+				handle.pos.x = (cast(int)(sliderValue * bar.w + bar.x));
 			}
 		}
-		//writeln(sliderValue);
 	}
 
 	public void Render(Window window) {
 		SDL_SetRenderDrawColor(window.renderer, barColour.r, barColour.g, barColour.b, barColour.a);
 		SDL_RenderFillRect(window.renderer, &bar);
+
+		SDL_SetRenderDrawColor(window.renderer, outlineColour.r, outlineColour.g, outlineColour.b, outlineColour.a);
+		SDL_RenderDrawRect(window.renderer, &bar);
 
 		handle.Render(window);
 	}
@@ -59,8 +56,8 @@ class Slider{
 		else if (y < bar.y) isIn = false;
 		else if (y > bar.y + bar.h) isIn = false;
 
-		x -= bar.x;
-		y -= bar.y;
+		//x -= bar.x;
+		//y -= bar.y;
 	
 		return isIn;
 	}

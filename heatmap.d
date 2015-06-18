@@ -8,16 +8,16 @@ import derelict.sdl2.sdl;
 import colour;
 
 class HeatMap {
-	public Colour[] mousePositions;
+	public float[] mousePositions;
 
 	private int width;
 	private int height;
 
 	this(int width, int height) {
-		mousePositions = new Colour[width*height];
+		mousePositions = new float[width*height];
 		this.width = width;
 		this.height = height;
-		for(int i = 0; i < width * height; i++) mousePositions[i] = Colour(0,0,0);
+		for(int i = 0; i < width * height; i++) mousePositions[i] = 0.0;
 	}
 
 	~this() {
@@ -32,23 +32,11 @@ class HeatMap {
 		for(int j = -1; j < 1; j++) {
 			for(int k = -1; k < 1; k++) {
 				if(((x + j) + (y + k) * width) > 0 && ((x + j) + (y + k) * width) < width * height) {
-					Colour temp = mousePositions[(x + j) + (y + k) * width];
-
-					int red = temp.r;
-					red +=20;
-					if(red > 255) red = 255;
-
-					temp.r = cast(ubyte) red;
-
-					mousePositions[(x + j) + (y + k) * width] = Colour(temp.r, temp.g, temp.b, temp.a);
+					mousePositions[(x + j) + (y + k) * width] += 0.1;
 				}
 			}
 		}
 	}
-
-	//private Colour ColourMap(float value) {
-		
-	//}
 
 	void SaveHeatMap(string path) {
 
@@ -57,7 +45,8 @@ class HeatMap {
 		if(outSurface){
 			uint* pixels = cast(uint*)outSurface.pixels;
 			for (int i  = 0; i <  width * height; i++) {
-				pixels[i] = SDL_MapRGB(outSurface.format, mousePositions[i].r, mousePositions[i].g, mousePositions[i].b);
+				Colour temp = Colour.Lerp(Colour.Blue, Colour.Red, mousePositions[i]/1);
+				pixels[i] = SDL_MapRGB(outSurface.format, temp.r, temp.g, temp.b);
 			}
 		}
 
