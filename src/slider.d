@@ -28,7 +28,9 @@ class Slider{
 
 	public void HandleEvent(ref SDL_Event e) {
 		int x,y = 0;
-		if(e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT){
+		uint mouseState = SDL_GetMouseState(null, null);
+		//if(e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT){
+		if(SDL_GetMouseState(null, null) & SDL_BUTTON(SDL_BUTTON_LEFT)){
 		 	if(MouseOver(x,y)) {
 				sliderValue = (cast(float)x - cast(float)bar.x) / cast(float)bar.w;
 				handle.pos.x = (cast(int)(sliderValue * bar.w + bar.x));

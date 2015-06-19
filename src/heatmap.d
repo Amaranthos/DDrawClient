@@ -29,13 +29,41 @@ class HeatMap {
 
 		SDL_GetMouseState(&x, &y);
 
-		for(int j = -1; j < 1; j++) {
-			for(int k = -1; k < 1; k++) {
-				if(((x + j) + (y + k) * width) > 0 && ((x + j) + (y + k) * width) < width * height) {
-					mousePositions[(x + j) + (y + k) * width] += 0.1;
-				}
+		for(int j = -3; j <= 3; j++) {
+			for(int k = -3; k <= 3; k++) {
+				if(((x + j) + (y + k) * width) > 0 && ((x + j) + (y + k) * width) < width * height){
+					if((j == -3 || j == 3) && (k == -3 || k == 3))
+						mousePositions[(x + j) + (y + k) * width] += 0.125;
+					else
+						mousePositions[(x + j) + (y + k) * width] += 0.25;
+				}	
 			}
 		}
+
+
+		for(int j = -2; j <= 2; j++) {
+			for(int k = -2; k <= 2; k++) {
+				if(((x + j) + (y + k) * width) > 0 && ((x + j) + (y + k) * width) < width * height){
+					if((j == -2 || j == 2) && (k == -2 || k == 2))
+						mousePositions[(x + j) + (y + k) * width] += 0.25;
+					else
+						mousePositions[(x + j) + (y + k) * width] += 0.5;
+				}	
+			}
+		}
+
+		for(int j = -1; j <= 1; j++) {
+			for(int k = -1; k <= 1; k++) {
+				if(((x + j) + (y + k) * width) > 0 && ((x + j) + (y + k) * width) < width * height){
+					if((j == -1 || j == 1) && (k == -1 || k == 1))
+						mousePositions[(x + j) + (y + k) * width] += 0.5;
+					else
+						mousePositions[(x + j) + (y + k) * width] += 1;
+				}	
+			}
+		}
+
+		mousePositions[x + y * width] += 2;
 	}
 
 	void SaveHeatMap(string path) {
@@ -44,8 +72,9 @@ class HeatMap {
 
 		if(outSurface){
 			uint* pixels = cast(uint*)outSurface.pixels;
+			float greatest = HeatMapGreatest();
 			for (int i  = 0; i <  width * height; i++) {
-				Colour temp = Colour.Lerp(Colour.Blue, Colour.Red, mousePositions[i]/1);
+				Colour temp = Colour.Lerp(Colour.Blue, Colour.Red, Scale(greatest, i));
 				pixels[i] = SDL_MapRGB(outSurface.format, temp.r, temp.g, temp.b);
 			}
 		}
@@ -54,4 +83,19 @@ class HeatMap {
 
 		SDL_FreeSurface(outSurface);
 	}
-}		
+
+	private float HeatMapGreatest() {
+		float greatest = 0.0;
+
+		for (int i = 0; i < mousePositions.length; i++){
+			if(mousePositions[i] > greatest)
+				greatest = mousePositions[i];
+		}
+
+		return greatest;
+	}
+
+	private float Scale(float greatest, int index) {
+		return mousePositions[index]/(0.1 * greatest);
+	}
+}

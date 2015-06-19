@@ -4,4 +4,6 @@
 
 *.log
 
-heatmap.bmp
+img/heatmap.bmp
+Thumbs.db
+log.txt
