@@ -6,6 +6,7 @@ import std.conv;
 import std.array;
 import std.algorithm;
 import std.file;
+import std.string;
 
 import core.time;
 import core.thread;
@@ -21,10 +22,6 @@ import comms;
 import texture;
 import slider;
 
-//static string ip = "127.0.0.1";
-//static string ip = "10.40.61.0";
-static string ip = "10.40.60.114";
-
 static int PADDING = 200;
 
 static bool isLogging = true;
@@ -32,6 +29,8 @@ static bool isLogging = true;
 class App{
 	//Member variables
 	static App inst;
+
+	string ip = "";
 
 	Window window = new Window();;
 
@@ -84,6 +83,9 @@ class App{
 		}
 		else {
 			if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) writeln("Warning: Linear texture filtering not enabled!");
+
+			writeln("Input server ip (XXX.XXX.XXX.XXX): ");
+			ip = strip(stdin.readln());
 
 			comms.InitialiseSocket(ip, 1300);
 
