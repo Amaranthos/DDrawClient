@@ -8,6 +8,7 @@ import packets;
 class Comms {
 	public Socket sendSocket;
 	public Address sendAddress;
+	public SocketSet sockets;
 
 	this () {
 
@@ -16,6 +17,8 @@ class Comms {
 	public void InitialiseSocket(const char[] hostAddress, ushort port) {
 		sendSocket = new UdpSocket();
 		sendAddress = parseAddress(hostAddress, port);
+		sockets = new SocketSet();
+		sockets.add(sendSocket);
 	}
 
 	public void SendPacket(T)(ref T packet, bool doPrint = true) {
@@ -26,9 +29,6 @@ class Comms {
 	}
 
 	public byte[] RecievePacket(bool doPrint = true) {
-		SocketSet sockets = new SocketSet();
-		sockets.add(sendSocket);
-
 		byte[] buffer = new byte[1024];
 
 		if(Socket.select(sockets, null, null) == 1) {

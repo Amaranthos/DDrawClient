@@ -422,6 +422,24 @@ class App{
 
 	public void Close() {
 		if(isLogging) file.writeln(stderr, "Closing application");
+
+		delete canvas;
+		delete colourPicker;
+
+		delete b_pixel;
+		delete b_circle;
+		delete b_box;
+		delete b_line;
+
+		delete s_red;
+		delete s_green;
+		delete s_blue;
+
+		delete heatMap;
+
+		delete comms;
+		delete window;
+
 		SDL_Quit();
 	}
 }
